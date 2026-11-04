@@ -1,0 +1,75 @@
+# Branes.AI CLA check — reusable workflow (lives in the public branes-ai/cla repository).
+# Every code repository calls this file; see every-repo/.github/workflows/cla.yml.
+#
+# What it does on each pull request:
+#   1. Reads the allowlist (Branes.AI employees, contractors under IP assignment, bots)
+#      from the private branes-ai/cla-signatures repository.
+#   2. Checks every commit author against the signature store in that same repository.
+#   3. If anyone has not signed, comments with a link to the Individual CLA and the
+#      acceptance statement, and sets a failing status that blocks the merge.
+#   4. When the contributor posts the acceptance statement, records their GitHub
+#      username, account ID, PR and timestamp in cla-signatures and clears the status.
+# One signature covers all Branes.AI repositories, as with Google's CLA.
+
+name: CLA check (reusable)
+
+on:
+  workflow_call:
+    secrets:
+      CLA_SIGNATURES_TOKEN:
+        required: true
+
+permissions:
+  actions: write
+  contents: read
+  pull-requests: write
+  statuses: write
+
+jobs:
+  cla:
+    runs-on: ubuntu-latest
+    steps:
+      # Never checks out pull request code: only the private signature repository.
+      - name: Read allowlist
+        uses: actions/checkout@v4
+        with:
+          repository: branes-ai/cla-signatures
+          token: ${{ secrets.CLA_SIGNATURES_TOKEN }}
+          path: cla-signatures
+          sparse-checkout: allowlist.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Build allowlist string
+        id: list
+        run: |
+          list=$(grep -v '^\s*#' cla-signatures/allowlist.txt | sed 's/\s//g' | grep -v '^$' | paste -sd, -)
+          echo "value=$list" >> "$GITHUB_OUTPUT"
+
+      - name: CLA Assistant
+        if: >-
+          github.event_name == 'pull_request_target' ||
+          github.event.comment.body == 'recheck' ||
+          github.event.comment.body == 'I have read the Branes.AI Individual Contributor License Agreement and I hereby sign it.'
+        uses: contributor-assistant/github-action@ca4a40a7d1004f18d9960b404b97e5f30a505a08 # v2.6.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.CLA_SIGNATURES_TOKEN }}
+        with:
+          remote-organization-name: branes-ai
+          remote-repository-name: cla-signatures
+          branch: main
+          path-to-signatures: signatures/icla-v1.json
+          path-to-document: https://github.com/branes-ai/cla/blob/main/ICLA.md
+          allowlist: ${{ steps.list.outputs.value }}
+          custom-pr-sign-comment: I have read the Branes.AI Individual Contributor License Agreement and I hereby sign it.
+          custom-notsigned-prcomment: >-
+            Thank you for your contribution. Before we can merge it, each author must accept the
+            [Branes.AI Individual Contributor License Agreement](https://github.com/branes-ai/cla/blob/main/ICLA.md).
+            To accept, post the comment below exactly as written. One acceptance covers every Branes.AI repository.
+            If you are contributing as part of your job, or as university faculty, staff or a student, your employer or
+            institution must also sign the [Corporate CLA](https://github.com/branes-ai/cla/blob/main/CCLA.md);
+            contact kishore.kondapi@branes.ai.
+          custom-allsigned-prcomment: All contributors have accepted the Branes.AI Individual Contributor License Agreement.
+          signed-commit-message: "$contributorName accepted the ICLA in $owner/$repo#$pullRequestNo"
+          create-file-commit-message: Create ICLA v1 signature store
+          lock-pullrequest-aftermerge: true
