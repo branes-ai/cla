@@ -1,0 +1,9 @@
+# Branes.AI CLA: accounts covered by a signed agreement or onboarding agreement.
+# Each line is scrypt(GitHub account ID); see .github/scripts/signers-lib.js on main.
+# Generated automatically. Do not edit.
+2eb6df6c30903f789b591514015848e7d1a18dd28944d96a229eeb7c382e72cb
+44d48317ea411b91743b9409ef122aed751b80511f34c51c71b92d5dc59afb60
+45ebb7870277fc71f9c4e57a3270075647fb449cb1ab2f2770494e278dea5ea9
+56fa86a66ff99701c5ba9ea1a55f22a5bdc593c71f1ffea0d8a3ab5af2eb5813
+7351b2e4d6b00a7d34cfb176e2cebf6d4bf0aa2a4f5a91b7a87a05efbc33dce1
+e3d56d43258e6f3f800e06c8010845ced229610be556e14350d5c96e76cdfd19
