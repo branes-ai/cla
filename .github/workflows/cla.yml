@@ -62,13 +62,16 @@ jobs:
           path-to-document: https://github.com/branes-ai/cla/blob/main/ICLA.md
           allowlist: ${{ steps.list.outputs.value }}
           custom-pr-sign-comment: I have read the Branes.AI Individual Contributor License Agreement and I hereby sign it.
-          custom-notsigned-prcomment: >-
-            Thank you for your contribution. Before we can merge it, each author must accept the
-            [Branes.AI Individual Contributor License Agreement](https://github.com/branes-ai/cla/blob/main/ICLA.md).
-            To accept, post the comment below exactly as written. One acceptance covers every Branes.AI repository.
-            If you are contributing as part of your job, or as university faculty, staff or a student, your employer or
-            institution must also sign the [Corporate CLA](https://github.com/branes-ai/cla/blob/main/CCLA.md);
-            contact kishore.kondapi@branes.ai.
+          custom-notsigned-prcomment: |
+            **A contributor license agreement is needed before this pull request can be merged.** Pick the case that fits you:
+
+            **1. You are an outside contributor.** Read the [Branes.AI Individual Contributor License Agreement](https://github.com/branes-ai/cla/blob/main/ICLA.md), then post the statement shown below as a comment on this pull request, exactly as written. That is all: no PDF, no email. One acceptance covers every Branes.AI repository.
+
+            **2. You are joining Branes.AI as an employee, contractor or intern.** Do not sign here. Your onboarding agreement covers your work. Ask your Branes.AI contact to add your GitHub username to the CLA allowlist, then comment `recheck`.
+
+            **3. You contribute as part of your job at another company, or at a university.** Your employer or institution must also sign the [Corporate CLA](https://github.com/branes-ai/cla/blob/main/CCLA.md) (fillable PDF). Contact kishore.kondapi@branes.ai.
+
+            All agreements and instructions: https://github.com/branes-ai/cla
           custom-allsigned-prcomment: All contributors have accepted the Branes.AI Individual Contributor License Agreement.
           signed-commit-message: "$contributorName accepted the ICLA in $owner/$repo#$pullRequestNo"
           create-file-commit-message: Create ICLA v1 signature store
