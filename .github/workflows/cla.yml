@@ -46,6 +46,7 @@ jobs:
           echo "value=$list" >> "$GITHUB_OUTPUT"
 
       - name: CLA Assistant
+        id: cla
         if: >-
           github.event_name == 'pull_request_target' ||
           github.event.comment.body == 'recheck' ||
@@ -76,3 +77,28 @@ jobs:
           signed-commit-message: "$contributorName accepted the ICLA in $owner/$repo#$pullRequestNo"
           create-file-commit-message: Create ICLA v1 signature store
           lock-pullrequest-aftermerge: true
+
+      # The action's own log line ("Committers of Pull Request number N have to sign the CLA")
+      # is not explanatory. On failure, write a plain-English summary to the run page and a
+      # check annotation, so anyone who clicks "Details" sees what to do.
+      - name: Explain the result
+        if: failure() && steps.cla.outcome == 'failure'
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url || github.event.issue.html_url }}
+        run: |
+          echo "::error title=Contributor License Agreement not yet accepted::At least one commit author on this pull request has not accepted the Branes.AI CLA. See the CLA bot comment on the pull request for what to do: $PR_URL"
+          cat >> "$GITHUB_STEP_SUMMARY" <<EOF
+          ## Contributor License Agreement not yet accepted
+
+          At least one commit author on [this pull request]($PR_URL) is not yet covered by a Branes.AI contributor agreement, so the merge is blocked. This is expected, not a build error. The CLA bot's comment on the pull request explains what to do:
+
+          | Who you are | What to do |
+          | --- | --- |
+          | Outside contributor | Read the [Individual CLA](https://github.com/branes-ai/cla/blob/main/ICLA.md), then post the acceptance statement from the bot's comment on the pull request |
+          | Branes.AI employee, contractor or intern | Do not sign. Ask your Branes.AI contact to add your GitHub username to the CLA allowlist, then comment **recheck** |
+          | Contributing for an employer or university | Your organization must also sign the [Corporate CLA](https://github.com/branes-ai/cla/blob/main/CCLA.md); contact kishore.kondapi@branes.ai |
+
+          If the bot says a committer "seems not to be a GitHub user", the commit was made with an email address that is not linked to a GitHub account. Set your Git email to the address on your GitHub account, amend the commit, and push again.
+
+          All agreements and instructions: https://github.com/branes-ai/cla
+          EOF
