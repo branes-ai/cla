@@ -1,11 +1,15 @@
 # Records CLA signatures submitted through the signing page
 # (https://branes-ai.github.io/cla/sign/). The page encrypts the contributor's details in
-# their browser and opens a GitHub issue here containing only the encrypted block.
-# This workflow decrypts it, stores the record in the private branes-ai/cla-signatures
-# repository, confirms on the issue, then closes and locks it.
+# their browser and opens an issue here containing only the encrypted block. This workflow
+# decrypts it, stores the record in the private branes-ai/cla-signatures repository,
+# refreshes the public scrambled signer list, re-runs failed CLA checks across the org,
+# confirms to the signer, then deletes the issue so no encrypted copy stays public.
 #
-# Secrets: CLA_FORM_PRIVATE_KEY (this repository), CLA_SIGNATURES_TOKEN (org),
-#          CLA_RECHECK_TOKEN (optional, org: lets the bot re-run the check on the PR).
+# All secrets live in the "cla-signing" environment, usable only from the main branch:
+#   CLA_FORM_PRIVATE_KEY                  decrypts submissions
+#   RECORDER_APP_ID, RECORDER_APP_KEY     GitHub App on cla + cla-signatures only
+#   RECHECK_APP_ID, RECHECK_APP_KEY       GitHub App on all repositories, Actions only
+# Never print decrypted details or usernames from the signature store: logs are public.
 
 name: CLA signing page
 
@@ -25,18 +29,30 @@ jobs:
   record:
     if: contains(github.event.issue.body, 'BRANES-CLA-ENCRYPTED-V1')
     runs-on: ubuntu-latest
+    environment: cla-signing
     steps:
-      - name: Check out the processing script
-        uses: actions/checkout@v4
+      - name: Recorder token
+        id: rec-token
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2.2.2
         with:
+          app-id: ${{ secrets.RECORDER_APP_ID }}
+          private-key: ${{ secrets.RECORDER_APP_KEY }}
+          owner: branes-ai
+          repositories: cla,cla-signatures
+
+      - name: Get the scripts
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: main
           sparse-checkout: .github/scripts
           path: cla
+          persist-credentials: false
 
-      - name: Check out the private signature store
-        uses: actions/checkout@v4
+      - name: Get the private signature store
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           repository: branes-ai/cla-signatures
-          token: ${{ secrets.CLA_SIGNATURES_TOKEN }}
+          token: ${{ steps.rec-token.outputs.token }}
           path: sigs
 
       - name: Decrypt and record
@@ -56,53 +72,97 @@ jobs:
         working-directory: sigs
         env:
           SIGNER: ${{ github.event.issue.user.login }}
-          ISSUE_URL: ${{ github.event.issue.html_url }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "branes-cla-recorder[bot]"
+          git config user.email "branes-cla-recorder[bot]@users.noreply.github.com"
           git add signatures
           git diff --cached --quiet && exit 0
-          git commit -q -m "$SIGNER signed ICLA v1 via signing page" -m "$ISSUE_URL"
+          git commit -q -m "$SIGNER signed ICLA v1 via signing page"
           for i in 1 2 3; do git push -q && exit 0; git pull -q --rebase; done
           exit 1
 
-      - name: Re-run the CLA check on the pull request
-        id: recheck
-        if: (steps.rec.outputs.result == 'ok' || steps.rec.outputs.result == 'updated') && steps.rec.outputs.pull_request != ''
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ secrets.CLA_RECHECK_TOKEN }}
-          PR_URL: ${{ steps.rec.outputs.pull_request }}
-        run: |
-          [ -n "$GH_TOKEN" ] || { echo "done=no" >> "$GITHUB_OUTPUT"; exit 0; }
-          repo=$(echo "$PR_URL" | sed -E 's#https://github.com/([^/]+/[^/]+)/pull/([0-9]+).*#\1#')
-          num=$(echo "$PR_URL" | sed -E 's#https://github.com/([^/]+/[^/]+)/pull/([0-9]+).*#\2#')
-          gh api "repos/$repo/issues/$num/comments" -f body="recheck" >/dev/null && echo "done=yes" >> "$GITHUB_OUTPUT"
+      - name: Get the public signer list
+        if: steps.rec.outputs.result == 'ok'
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: signers
+          token: ${{ steps.rec-token.outputs.token }}
+          path: signers
 
-      - name: Confirm, close and lock
+      - name: Refresh the public signer list
+        id: pub
+        if: steps.rec.outputs.result == 'ok'
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        with:
+          github-token: ${{ steps.rec-token.outputs.token }}
+          script: |
+            const publish = require(`${process.env.GITHUB_WORKSPACE}/cla/.github/scripts/publish-signers.js`);
+            const changed = await publish({ github, core, sigDir: `${process.env.GITHUB_WORKSPACE}/sigs`, outFile: `${process.env.GITHUB_WORKSPACE}/signers/signers.txt` });
+            core.setOutput('changed', changed ? 'yes' : 'no');
+
+      - name: Publish the signer list
+        if: steps.pub.outputs.changed == 'yes'
+        working-directory: signers
+        run: |
+          git config user.name "branes-cla-recorder[bot]"
+          git config user.email "branes-cla-recorder[bot]@users.noreply.github.com"
+          git commit -qam "Update signer list"
+          git push -q
+
+      - name: Recheck token
+        id: re-token
+        if: steps.pub.outputs.changed == 'yes'
+        continue-on-error: true
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2.2.2
+        with:
+          app-id: ${{ secrets.RECHECK_APP_ID }}
+          private-key: ${{ secrets.RECHECK_APP_KEY }}
+          owner: branes-ai
+
+      - name: Re-run failed CLA checks
+        id: rerun
+        if: steps.re-token.outcome == 'success'
+        continue-on-error: true
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        with:
+          github-token: ${{ steps.re-token.outputs.token }}
+          script: |
+            const { rerunAllFailed } = require(`${process.env.GITHUB_WORKSPACE}/cla/.github/scripts/rerun.js`);
+            await rerunAllFailed(github, 'branes-ai', core);
+
+      - name: Confirm to the signer
         if: always() && steps.rec.outputs.result != ''
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         env:
           RESULT: ${{ steps.rec.outputs.result }}
           MESSAGE: ${{ steps.rec.outputs.message }}
           CTYPE: ${{ steps.rec.outputs.contributor_type }}
           PR_URL: ${{ steps.rec.outputs.pull_request }}
-          RECHECKED: ${{ steps.recheck.outputs.done }}
+          RERAN: ${{ steps.rerun.outcome }}
         with:
           script: |
-            const { RESULT, MESSAGE, CTYPE, PR_URL, RECHECKED } = process.env;
-            const n = context.issue.number;
+            const { RESULT, MESSAGE, CTYPE, PR_URL, RERAN } = process.env;
             const who = '@' + context.payload.issue.user.login;
             let body;
             if (RESULT === 'ok' || RESULT === 'updated') {
-              body = `${who} thank you: your acceptance of the Branes.AI Individual Contributor License Agreement (v1.0) is recorded. Your details are stored privately by Branes.AI.\n\n`;
-              if (RECHECKED === 'yes') body += `The CLA check on ${PR_URL} is re-running now.`;
-              else if (PR_URL) body += `Next: comment \`recheck\` on ${PR_URL} and the CLA check will pass.`;
-              else body += 'Next: comment `recheck` on your pull request and the CLA check will pass. One acceptance covers every Branes.AI repository.';
+              body = `${who} thank you: your acceptance of the Branes.AI Individual Contributor License Agreement (v1.0) is recorded and your details are stored privately. One signature covers every Branes.AI repository.\n\n`;
+              body += RERAN === 'success'
+                ? 'The CLA check on your open pull requests is re-running now and should turn green within a few minutes.'
+                : `If the CLA check${PR_URL ? ' on ' + PR_URL : ''} is still red in a few minutes, comment \`recheck\` on the pull request.`;
               if (CTYPE === 'employer' || CTYPE === 'university') body += '\n\nBecause you contribute for an employer or university, your organization must also sign the [Corporate CLA](https://github.com/branes-ai/cla/blob/main/CCLA.md). Contact kishore.kondapi@branes.ai.';
             } else {
               body = `${who} your signature could not be recorded: ${MESSAGE}\n\nSigning page: https://branes-ai.github.io/cla/sign/`;
             }
-            await github.rest.issues.createComment({ ...context.repo, issue_number: n, body });
-            await github.rest.issues.update({ ...context.repo, issue_number: n, state: 'closed', state_reason: (RESULT === 'error' ? 'not_planned' : 'completed') });
-            await github.rest.issues.lock({ ...context.repo, issue_number: n, lock_reason: 'resolved' });
+            body += '\n\nFor your privacy this request is deleted automatically in a moment; this message is also in your GitHub notifications email.';
+            await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body });
+
+      - name: Delete the request
+        if: always() && steps.rec-token.outcome == 'success'
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        with:
+          github-token: ${{ steps.rec-token.outputs.token }}
+          script: |
+            await new Promise((r) => setTimeout(r, 20000)); // let the notification email go out
+            await github.graphql('mutation($id: ID!) { deleteIssue(input: { issueId: $id }) { clientMutationId } }',
+              { id: context.payload.issue.node_id });
+            core.info('Request deleted.');

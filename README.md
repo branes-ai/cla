@@ -4,12 +4,12 @@ Contributions to Branes.AI open-source projects are accepted under these agreeme
 
 | Agreement | Who accepts it | How |
 | --- | --- | --- |
-| [Individual CLA](ICLA.md) ([fillable PDF](pdf/BranesAI_Individual_CLA.pdf)) | Every contributor | Sign on the [signing page](https://branes-ai.github.io/cla/sign/) (details kept private), or comment the acceptance statement on your pull request |
+| [Individual CLA](ICLA.md) ([fillable PDF](pdf/BranesAI_Individual_CLA.pdf)) | Every contributor | Sign on the [signing page](https://branes-ai.github.io/cla/sign/) (details kept private). Signed the PDF instead? Send it to kishore.kondapi@branes.ai |
 | [Corporate CLA](CCLA.md) ([fillable PDF](pdf/BranesAI_Corporate_CLA.pdf)) | Employers and universities whose people contribute | Signed once by an authorized signatory; send to kishore.kondapi@branes.ai |
 
 ## Joining Branes.AI as an employee, contractor or intern
 
-You do not sign the Individual CLA on GitHub. Your onboarding agreement covers your work. Before your first pull request, your Branes.AI contact adds your GitHub username to the CLA allowlist, so the CLA check passes automatically. If the bot asks you to sign anyway, ask your contact to add you, then comment `recheck` on the pull request.
+You do not sign the Individual CLA on GitHub. Your onboarding agreement covers your work. Before your first pull request, your Branes.AI contact adds your GitHub username to the CLA allowlist, so the CLA check passes automatically. If the bot asks you to sign anyway, ask your contact to add you; the check re-runs by itself within 15 minutes.
 
 ## Filling in the PDFs
 

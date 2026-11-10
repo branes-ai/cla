@@ -1,0 +1,103 @@
+# Keeps the public scrambled signer list in step with the private store, so that adding a
+# team member to allowlist.txt in branes-ai/cla-signatures takes effect within about 15
+# minutes, then re-runs failed CLA checks. Also removes finished signing-page runs from
+# this public repository's Actions history, so they do not show who signed.
+# Secrets: the "cla-signing" environment (see cla-form.yml).
+
+name: CLA sync
+
+on:
+  schedule:
+    - cron: "7,22,37,52 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cla-signatures-write
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    environment: cla-signing
+    steps:
+      - name: Recorder token
+        id: rec-token
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2.2.2
+        with:
+          app-id: ${{ secrets.RECORDER_APP_ID }}
+          private-key: ${{ secrets.RECORDER_APP_KEY }}
+          owner: branes-ai
+          repositories: cla,cla-signatures
+
+      - name: Get the scripts
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: main
+          sparse-checkout: .github/scripts
+          path: cla
+          persist-credentials: false
+
+      - name: Get the private signature store
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          repository: branes-ai/cla-signatures
+          token: ${{ steps.rec-token.outputs.token }}
+          path: sigs
+          persist-credentials: false
+
+      - name: Get the public signer list
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: signers
+          token: ${{ steps.rec-token.outputs.token }}
+          path: signers
+
+      - name: Rebuild the signer list
+        id: pub
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        with:
+          github-token: ${{ steps.rec-token.outputs.token }}
+          script: |
+            const publish = require(`${process.env.GITHUB_WORKSPACE}/cla/.github/scripts/publish-signers.js`);
+            const changed = await publish({ github, core, sigDir: `${process.env.GITHUB_WORKSPACE}/sigs`, outFile: `${process.env.GITHUB_WORKSPACE}/signers/signers.txt` });
+            core.setOutput('changed', changed ? 'yes' : 'no');
+
+      - name: Publish the signer list
+        if: steps.pub.outputs.changed == 'yes'
+        working-directory: signers
+        run: |
+          git config user.name "branes-cla-recorder[bot]"
+          git config user.email "branes-cla-recorder[bot]@users.noreply.github.com"
+          git commit -qam "Update signer list"
+          git push -q
+
+      - name: Recheck token
+        id: re-token
+        if: steps.pub.outputs.changed == 'yes' || github.event_name == 'workflow_dispatch'
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2.2.2
+        with:
+          app-id: ${{ secrets.RECHECK_APP_ID }}
+          private-key: ${{ secrets.RECHECK_APP_KEY }}
+          owner: branes-ai
+
+      - name: Re-run failed CLA checks
+        if: steps.re-token.outcome == 'success'
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        with:
+          github-token: ${{ steps.re-token.outputs.token }}
+          script: |
+            const { rerunAllFailed } = require(`${process.env.GITHUB_WORKSPACE}/cla/.github/scripts/rerun.js`);
+            await rerunAllFailed(github, 'branes-ai', core);
+
+      - name: Remove finished signing-page runs from the public history
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        with:
+          github-token: ${{ steps.rec-token.outputs.token }}
+          script: |
+            const runs = await github.paginate(github.rest.actions.listWorkflowRuns,
+              { ...context.repo, workflow_id: 'cla-form.yml', status: 'completed', per_page: 100 });
+            for (const r of runs) await github.rest.actions.deleteWorkflowRun({ ...context.repo, run_id: r.id });
+            core.info(`Removed ${runs.length} finished signing-page run(s).`);

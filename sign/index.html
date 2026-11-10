@@ -48,7 +48,7 @@
       <li>Read the agreement below and fill in your details.</li>
       <li>Click <strong>Continue to GitHub</strong>. Your details are encrypted in this browser before they leave it; only Branes.AI can read them.</li>
       <li>On GitHub, click <strong>Create</strong> (or <strong>Submit new issue</strong>). Your GitHub sign-in identifies you as the signer.</li>
-      <li>Within about a minute a bot confirms your signature. Then comment <code>recheck</code> on your pull request if it has not already turned green.</li>
+      <li>Within about a minute a bot confirms your signature and re-runs the check on your pull request, which turns green by itself. The request is then deleted automatically, so no copy of it stays public.</li>
     </ol>
     <p class="hint">Joining Branes.AI as an employee, contractor or intern? Do not sign here: your onboarding agreement covers you. Ask your Branes.AI contact to add you to the CLA allowlist.</p>
   </section>
@@ -105,7 +105,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
 <script>
-const PUBLIC_KEY_B64 = "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAtMGUSnnrOUEIvVkfK3XnYk2T1srE8ZjxxQ2cu61POoQgAgmJuKLp+7jmrGucFfaFZjDeMslQp9G+EieJzXjwWkbfCImdcx+Lu9OUDdWTSRxV4MIGaDYgpFsOe9QuPRgoM+0YStttWQ2XEtrm7B/5TK7no0agrf67BHxt0AMB+nzFufDcxCEQ94JlSK9wcB2BjUvIOEwqrZoqAjL9tmiadYvvk/RLo1azbet4CTyESfGblij9BhcURRkWxhmO8Py10wa+Qn5uvijquUfRxs/+BeR1TOc7lRk3pASs8HmtUDAGWf+O4c0bLDQAHYuwozd/I2mTolygfS4hPQakyD7ZSpzABcFLMqyVQrKIp3wcdYZnqMy2SJFhSWz0oOeYztSZbVNP0qLhGrmyMXMzgSKWyl/PGnxhboHIvGR5RhpgHCH78wnGCiOE3JKO6bWRwFScJ0/BVx7ZJsMksDaJBkJG0aPcDt9jDBHK7YcbsljyDGWWKWrzNOwEBX9oHmqw11UnSUJoWU6s1a2xgXM62Y3Ai24ZHTsuuTGPwsaloGweCD6dhmcl0dAgMoFumoll8+naYJH1n11qzWrpH1Lq82+IomSVKqBTujf0AQTSzrlJ4JbtZpK3knaqvSO1JQ0ajj0GEA9lGt8nt4oxi5iuPQH+u/CKIO9G9WrTDvagu/AjdLcCAwEAAQ==";
+const PUBLIC_KEY_B64 = "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAtKC/SfjWtZLl7XJCP/jhqCIupCqZx+G9siJPK5FXwQug1Hh/0kHRwcM3pvJBDS8e32272Ux4Fg50MZu1tGeWTFOP2Gd3mSPUxbHL1QTVQbgII+hrn57gzmInBa+DxB8hkPuG+IOvSzGGa5+pd8SGZjcqSY9cVpjVelBHP+BrX2SENCRQUGNCu1OSGQeTr0FclM8EqVkdWy/kqsh85TWj6bHdHRUS6ajbRuRkrtVCnx0FezW2GGF+TIhFd5plYMC9rdAjV8av7SaPcGqTLwgkfO5Z7Tb788sHNMb+1Ti1AZkVCSIjRh9LzPZfdjl+AcYt3Je/AT9m+If0pyvMyzY3IcTiZCq+72XXf94WZJZuq/Sp9L0hY+Y/uR7jbiszSmutfe9V49pNNdz5HPImAgwwww4w4mnEwYJFhtk06VWYmGkJPyRXZasGOMZCIfqqJVLLECu1xkY/GZmdzTYuvtfcd6t8vqDC9DiXnH9pBpLdNsFzdj1f+K/p4sk8FSVnawJqd9LrqQFHpdEHUR63niLcQG/F//d7vF/3r2NqGKCFUzlRy+bFOe8XudELJIBX2Sujljb6AW71IuEMiWXBGeGWs9CHaZKfREwL8BEGJBXniRRvKceF8+7CVhoP7zPxjAMY6TozF9U7CgdLTthvwBaqidfJZeqwu35fxCSSXgHb3tkCAwEAAQ==";
 const REPO_ISSUES = "https://github.com/branes-ai/cla/issues/new";
 
 const $ = (id) => document.getElementById(id);
