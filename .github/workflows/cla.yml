@@ -66,7 +66,7 @@ jobs:
           custom-notsigned-prcomment: |
             **A contributor license agreement is needed before this pull request can be merged.** Pick the case that fits you:
 
-            **1. You are an outside contributor.** Read the [Branes.AI Individual Contributor License Agreement](https://github.com/branes-ai/cla/blob/main/ICLA.md), then post the statement shown below as a comment on this pull request, exactly as written. That is all: no PDF, no email. One acceptance covers every Branes.AI repository.
+            **1. You are an outside contributor.** **[Sign the CLA on the signing page](https://branes-ai.github.io/cla/sign/)** (about 2 minutes; your details stay private), then comment `recheck` here if the check has not turned green. Prefer not to use the page? Read the [Individual CLA](https://github.com/branes-ai/cla/blob/main/ICLA.md) and post the statement shown below as a comment on this pull request, exactly as written. One acceptance covers every Branes.AI repository.
 
             **2. You are joining Branes.AI as an employee, contractor or intern.** Do not sign here. Your onboarding agreement covers your work. Ask your Branes.AI contact to add your GitHub username to the CLA allowlist, then comment `recheck`.
 
@@ -94,7 +94,7 @@ jobs:
 
           | Who you are | What to do |
           | --- | --- |
-          | Outside contributor | Read the [Individual CLA](https://github.com/branes-ai/cla/blob/main/ICLA.md), then post the acceptance statement from the bot's comment on the pull request |
+          | Outside contributor | Sign on the [signing page](https://branes-ai.github.io/cla/sign/), or post the acceptance statement from the bot's comment on the pull request |
           | Branes.AI employee, contractor or intern | Do not sign. Ask your Branes.AI contact to add your GitHub username to the CLA allowlist, then comment **recheck** |
           | Contributing for an employer or university | Your organization must also sign the [Corporate CLA](https://github.com/branes-ai/cla/blob/main/CCLA.md); contact kishore.kondapi@branes.ai |
 

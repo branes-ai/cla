@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign the Branes.AI CLA</title>
+<style>
+  :root { --navy:#0D1A2B; --teal:#00A3A8; --ink:#1A2430; --muted:#5B6B80; --line:#D5DCE4; --bg:#F4F6F8; --err:#B42318; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: -apple-system, "Segoe UI", Calibri, Roboto, sans-serif; color:var(--ink); background:var(--bg); line-height:1.5; }
+  header { background:var(--navy); color:#fff; padding:20px 16px; }
+  header .wrap { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  header h1 { margin:0; font-size:22px; }
+  header p { margin:0; color:var(--teal); font-size:14px; }
+  .wrap { max-width:820px; margin:0 auto; }
+  main { padding:20px 16px 48px; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:8px; padding:20px; margin-bottom:16px; }
+  h2 { font-size:18px; margin:0 0 8px; color:var(--navy); }
+  .steps { margin:0; padding-left:20px; }
+  #agreement { max-height:320px; overflow:auto; border:1px solid var(--line); border-radius:6px; padding:12px 16px; background:#FAFBFC; font-size:14px; }
+  #agreement h1 { font-size:18px; }
+  label { display:block; font-weight:600; margin:14px 0 4px; }
+  .hint { font-weight:400; color:var(--muted); font-size:13px; }
+  input[type=text], input[type=email], textarea, select { width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:6px; font:inherit; background:#fff; }
+  textarea { min-height:72px; resize:vertical; }
+  .check { display:flex; gap:10px; align-items:flex-start; margin-top:16px; font-weight:600; }
+  .check input { margin-top:5px; width:18px; height:18px; }
+  button { margin-top:20px; background:var(--teal); color:#fff; border:0; border-radius:6px; padding:12px 20px; font-size:16px; font-weight:600; cursor:pointer; }
+  button:disabled { opacity:.5; cursor:not-allowed; }
+  .err { color:var(--err); font-weight:600; margin-top:12px; }
+  .ok { border-left:4px solid var(--teal); }
+  code { background:var(--bg); padding:1px 4px; border-radius:4px; }
+  #fallback textarea { font-family: ui-monospace, Menlo, Consolas, monospace; font-size:12px; min-height:120px; }
+  .hidden { display:none; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Sign the Branes.AI Contributor License Agreement</h1>
+    <p>Individual CLA, version 1.0</p>
+  </div>
+</header>
+<main class="wrap">
+  <section class="card">
+    <h2>How this works (about 2 minutes)</h2>
+    <ol class="steps">
+      <li>Read the agreement below and fill in your details.</li>
+      <li>Click <strong>Continue to GitHub</strong>. Your details are encrypted in this browser before they leave it; only Branes.AI can read them.</li>
+      <li>On GitHub, click <strong>Create</strong> (or <strong>Submit new issue</strong>). Your GitHub sign-in identifies you as the signer.</li>
+      <li>Within about a minute a bot confirms your signature. Then comment <code>recheck</code> on your pull request if it has not already turned green.</li>
+    </ol>
+    <p class="hint">Joining Branes.AI as an employee, contractor or intern? Do not sign here: your onboarding agreement covers you. Ask your Branes.AI contact to add you to the CLA allowlist.</p>
+  </section>
+
+  <section class="card">
+    <h2>The agreement</h2>
+    <div id="agreement">Loading the agreement&hellip; If it does not appear, read it at <a href="https://github.com/branes-ai/cla/blob/main/ICLA.md">github.com/branes-ai/cla/blob/main/ICLA.md</a>.</div>
+    <p class="hint">Also available as a <a href="../pdf/BranesAI_Individual_CLA.pdf">PDF</a>.</p>
+  </section>
+
+  <section class="card">
+    <h2>Your details</h2>
+    <form id="f" novalidate>
+      <label for="name">Full legal name</label>
+      <input id="name" type="text" autocomplete="name" required>
+      <label for="email">Email address <span class="hint">(private; ideally the email on your commits)</span></label>
+      <input id="email" type="email" autocomplete="email" required>
+      <label for="address">Mailing address <span class="hint">(private)</span></label>
+      <textarea id="address" autocomplete="street-address" required></textarea>
+      <label for="country">Country of residence</label>
+      <input id="country" type="text" autocomplete="country-name" required>
+      <label for="ctype">You are contributing</label>
+      <select id="ctype" required>
+        <option value="">Select one</option>
+        <option value="individual">On my own behalf</option>
+        <option value="employer">As part of my job at a company</option>
+        <option value="university">As university faculty, staff or a student</option>
+      </select>
+      <div id="employerWrap" class="hidden">
+        <label for="employer">Company or university name</label>
+        <input id="employer" type="text" autocomplete="organization">
+        <p class="hint">Your organization must also sign the <a href="https://github.com/branes-ai/cla/blob/main/CCLA.md">Corporate CLA</a>. Contact kishore.kondapi@branes.ai.</p>
+      </div>
+      <label for="login">Your GitHub username <span class="hint">(the account that will submit on GitHub)</span></label>
+      <input id="login" type="text" autocomplete="username" required>
+      <label for="pr">Pull request link <span class="hint">(optional; lets the bot find it)</span></label>
+      <input id="pr" type="text" placeholder="https://github.com/branes-ai/&hellip;/pull/&hellip;">
+      <div class="check">
+        <input id="agree" type="checkbox" required>
+        <span>I have read the Branes.AI Individual Contributor License Agreement, version 1.0, and I accept it.</span>
+      </div>
+      <p class="hint">The date of signature is recorded automatically when you submit on GitHub.</p>
+      <button id="go" type="submit">Continue to GitHub</button>
+      <div id="msg" class="err" role="alert"></div>
+    </form>
+  </section>
+
+  <section id="fallback" class="card ok hidden">
+    <h2>One more step on GitHub</h2>
+    <p>A GitHub tab has opened with your encrypted signature. Click <strong>Create</strong> there. If no tab opened, <a id="manualLink" href="#">open it here</a>, or create an issue in <a href="https://github.com/branes-ai/cla/issues/new">branes-ai/cla</a> with the title <code>CLA signature</code> and paste this text as the body:</p>
+    <textarea id="bodyCopy" readonly></textarea>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script>
+const PUBLIC_KEY_B64 = "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAtMGUSnnrOUEIvVkfK3XnYk2T1srE8ZjxxQ2cu61POoQgAgmJuKLp+7jmrGucFfaFZjDeMslQp9G+EieJzXjwWkbfCImdcx+Lu9OUDdWTSRxV4MIGaDYgpFsOe9QuPRgoM+0YStttWQ2XEtrm7B/5TK7no0agrf67BHxt0AMB+nzFufDcxCEQ94JlSK9wcB2BjUvIOEwqrZoqAjL9tmiadYvvk/RLo1azbet4CTyESfGblij9BhcURRkWxhmO8Py10wa+Qn5uvijquUfRxs/+BeR1TOc7lRk3pASs8HmtUDAGWf+O4c0bLDQAHYuwozd/I2mTolygfS4hPQakyD7ZSpzABcFLMqyVQrKIp3wcdYZnqMy2SJFhSWz0oOeYztSZbVNP0qLhGrmyMXMzgSKWyl/PGnxhboHIvGR5RhpgHCH78wnGCiOE3JKO6bWRwFScJ0/BVx7ZJsMksDaJBkJG0aPcDt9jDBHK7YcbsljyDGWWKWrzNOwEBX9oHmqw11UnSUJoWU6s1a2xgXM62Y3Ai24ZHTsuuTGPwsaloGweCD6dhmcl0dAgMoFumoll8+naYJH1n11qzWrpH1Lq82+IomSVKqBTujf0AQTSzrlJ4JbtZpK3knaqvSO1JQ0ajj0GEA9lGt8nt4oxi5iuPQH+u/CKIO9G9WrTDvagu/AjdLcCAwEAAQ==";
+const REPO_ISSUES = "https://github.com/branes-ai/cla/issues/new";
+
+const $ = (id) => document.getElementById(id);
+const b64 = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf)));
+const fromB64 = (s) => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+
+// Prefill from query string (?login=...&pr=...)
+const q = new URLSearchParams(location.search);
+if (q.get("login")) $("login").value = q.get("login");
+if (q.get("pr")) $("pr").value = q.get("pr");
+
+$("ctype").addEventListener("change", () => {
+  $("employerWrap").classList.toggle("hidden", !["employer", "university"].includes($("ctype").value));
+});
+
+// Show the agreement text from this site
+fetch("../ICLA.md").then(r => r.ok ? r.text() : Promise.reject()).then(md => {
+  $("agreement").innerHTML = window.marked ? marked.parse(md) : "<pre style=\"white-space:pre-wrap\">" + md.replace(/</g, "&lt;") + "</pre>";
+}).catch(() => {});
+
+async function encrypt(obj) {
+  const pub = await crypto.subtle.importKey("spki", fromB64(PUBLIC_KEY_B64), { name: "RSA-OAEP", hash: "SHA-256" }, false, ["encrypt"]);
+  const aes = await crypto.subtle.generateKey({ name: "AES-GCM", length: 256 }, true, ["encrypt"]);
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const data = new TextEncoder().encode(JSON.stringify(obj));
+  const c = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, aes, data);
+  const k = await crypto.subtle.encrypt({ name: "RSA-OAEP" }, pub, await crypto.subtle.exportKey("raw", aes));
+  return btoa(JSON.stringify({ v: 1, k: b64(k), iv: b64(iv), c: b64(c) }));
+}
+
+function wrap(s, n) { return s.match(new RegExp(".{1," + n + "}", "g")).join("\n"); }
+
+$("f").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  $("msg").textContent = "";
+  const v = (id) => $(id).value.trim();
+  const missing = ["name", "email", "address", "country", "ctype", "login"].filter(id => !v(id));
+  if (["employer", "university"].includes(v("ctype")) && !v("employer")) missing.push("employer");
+  if (missing.length) { $("msg").textContent = "Please complete every required field."; $(missing[0]).focus(); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v("email"))) { $("msg").textContent = "Please enter a valid email address."; $("email").focus(); return; }
+  if (!/^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/.test(v("login"))) { $("msg").textContent = "Please enter a valid GitHub username (no @)."; $("login").focus(); return; }
+  if (v("pr") && !/^https:\/\/github\.com\/branes-ai\/[\w.-]+\/pull\/\d+\/?$/.test(v("pr"))) { $("msg").textContent = "The pull request link should look like https://github.com/branes-ai/<repo>/pull/<number>."; $("pr").focus(); return; }
+  if (!$("agree").checked) { $("msg").textContent = "Please tick the box to accept the agreement."; return; }
+  $("go").disabled = true;
+  try {
+    const blob = await encrypt({
+      agreement: "Branes.AI Individual CLA v1.0",
+      name: v("name"), email: v("email"), address: v("address"), country: v("country"),
+      contributor_type: v("ctype"), employer: v("employer"),
+      github_login_entered: v("login"), pull_request: v("pr"),
+      agreed: true, page_time: new Date().toISOString()
+    });
+    const body = [
+      "<!-- branes-cla-form v1 -->",
+      "I have read the Branes.AI Individual Contributor License Agreement (version 1.0) and I accept it by submitting this signature while signed in to my GitHub account.",
+      "",
+      "Pull request: " + (v("pr") || "not given"),
+      "",
+      "Please do not edit the text below. It contains my details, encrypted so that only Branes.AI can read them.",
+      "",
+      "```",
+      "BRANES-CLA-ENCRYPTED-V1",
+      wrap(blob, 76),
+      "END-BRANES-CLA",
+      "```"
+    ].join("\n");
+    const url = REPO_ISSUES + "?title=" + encodeURIComponent("CLA signature") + "&body=" + encodeURIComponent(body);
+    $("bodyCopy").value = body;
+    $("manualLink").href = url;
+    $("fallback").classList.remove("hidden");
+    window.open(url, "_blank", "noopener");
+    $("fallback").scrollIntoView({ behavior: "smooth" });
+  } catch (err) {
+    $("msg").textContent = "Your browser could not encrypt the form. Please try a current version of Chrome, Edge, Firefox or Safari.";
+  } finally {
+    $("go").disabled = false;
+  }
+});
+</script>
+</body>
+</html>

@@ -2,7 +2,7 @@
 
 *Version 1.0 · November 2026 · [PDF](pdf/BranesAI_Individual_CLA.pdf)*
 
-This Individual Contributor License Agreement (the "Agreement") is between Branes.AI Inc., 53 State Street, Suite 500, Boston, MA 02109 ("Branes.AI"), and the individual who accepts it ("You"). It sets the terms on which You submit Contributions to Branes.AI projects. Please read it carefully. You accept it, for all of Your present and future Contributions, either by signing the signature block below or by posting the acceptance statement in Section 10 as a comment on a Branes.AI pull request.
+This Individual Contributor License Agreement (the "Agreement") is between Branes.AI Inc., 53 State Street, Suite 500, Boston, MA 02109 ("Branes.AI"), and the individual who accepts it ("You"). It sets the terms on which You submit Contributions to Branes.AI projects. Please read it carefully. You accept it, for all of Your present and future Contributions, either by signing the signature block below or electronically as described in Section 10.
 
 **1. Definitions**
 
@@ -32,10 +32,10 @@ This Individual Contributor License Agreement (the "Agreement") is between Brane
 
 **9. General.** This Agreement is governed by the laws of the Commonwealth of Massachusetts, without regard to conflict-of-law rules. Branes.AI may assign this Agreement, and the rights granted under it, to any affiliate or to any successor to all or part of its business, including through merger or acquisition, without Your consent. The licenses granted in Sections 2 to 4 survive any termination of Your relationship with Branes.AI. This Agreement is the entire agreement on its subject and may be amended only in writing signed by both parties.
 
-**10. Electronic acceptance.** You may accept this Agreement by posting the following comment, exactly as written, on a pull request to any Branes.AI repository: "I have read the Branes.AI Individual Contributor License Agreement and I hereby sign it." Your GitHub username, GitHub account ID, the pull request and the time of the comment are recorded as Your signature, with the same effect as a handwritten signature. One acceptance covers Your Contributions to every Branes.AI repository.
+**10. Electronic acceptance.** You may accept this Agreement electronically, either (a) by posting the following comment, exactly as written, on a pull request to any Branes.AI repository: "I have read the Branes.AI Individual Contributor License Agreement and I hereby sign it."; or (b) by completing the Branes.AI CLA signing page and submitting the resulting signature while signed in to Your GitHub account. Your GitHub username, GitHub account ID and the time of acceptance, together with the related pull request or signature record and any details You provide on the signing page, are recorded as Your signature, with the same effect as a handwritten signature. One acceptance covers Your Contributions to every Branes.AI repository.
 
 ---
 
-To sign, post this comment on your pull request, exactly as written:
+To sign, use the [signing page](https://branes-ai.github.io/cla/sign/) (about 2 minutes; your details stay private), or post this comment on your pull request, exactly as written:
 
 > I have read the Branes.AI Individual Contributor License Agreement and I hereby sign it.

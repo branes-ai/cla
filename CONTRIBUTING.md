@@ -5,7 +5,7 @@ Thank you for your interest in contributing. Before we can merge any contributio
 ## How to sign
 
 1. Open your pull request. The CLA bot will comment if you have not yet signed.
-2. Post this comment on the pull request, exactly as written:
+2. Sign on the [signing page](https://branes-ai.github.io/cla/sign/) (about 2 minutes; your details stay private), or post this comment on the pull request, exactly as written:
 
    > I have read the Branes.AI Individual Contributor License Agreement and I hereby sign it.
 

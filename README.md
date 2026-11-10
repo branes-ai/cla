@@ -4,7 +4,7 @@ Contributions to Branes.AI open-source projects are accepted under these agreeme
 
 | Agreement | Who accepts it | How |
 | --- | --- | --- |
-| [Individual CLA](ICLA.md) ([fillable PDF](pdf/BranesAI_Individual_CLA.pdf)) | Every contributor | Comment the acceptance statement on your pull request; the CLA bot records it |
+| [Individual CLA](ICLA.md) ([fillable PDF](pdf/BranesAI_Individual_CLA.pdf)) | Every contributor | Sign on the [signing page](https://branes-ai.github.io/cla/sign/) (details kept private), or comment the acceptance statement on your pull request |
 | [Corporate CLA](CCLA.md) ([fillable PDF](pdf/BranesAI_Corporate_CLA.pdf)) | Employers and universities whose people contribute | Signed once by an authorized signatory; send to kishore.kondapi@branes.ai |
 
 ## Joining Branes.AI as an employee, contractor or intern
