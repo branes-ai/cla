@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>CLA App Setup</title>
+<style>
+  :root { --navy:#0d1a2b; --teal:#00a3a8; --ink:#1d2733; --muted:#5b6b80; --bg:#f4f6f8; --card:#fff; --line:#d5dce4; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ink:#e6ebf1; --muted:#9fb0c3; --bg:#0b121b; --card:#131d29; --line:#2a3a4d; } }
+  :root[data-theme="dark"] { --ink:#e6ebf1; --muted:#9fb0c3; --bg:#0b121b; --card:#131d29; --line:#2a3a4d; }
+  body { margin:0; font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; color:var(--ink); background:var(--bg); }
+  header { background:var(--navy); color:#fff; padding:20px 16px; }
+  header h1 { margin:0; font-size:1.3rem; }
+  main { max-width:760px; margin:0 auto; padding:16px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:18px; margin:16px 0; }
+  h2 { margin:0 0 8px; font-size:1.1rem; }
+  button { background:var(--teal); color:#fff; border:0; border-radius:8px; padding:10px 16px; font-size:1rem; cursor:pointer; }
+  .done { border-left:4px solid var(--teal); }
+  code { font-size:.92em; }
+  p.muted, li.muted { color:var(--muted); }
+</style>
+</head>
+<body>
+<header><h1>Branes.AI CLA: create the two GitHub Apps</h1></header>
+<main>
+  <div id="back" class="card done" hidden></div>
+
+  <div class="card">
+    <h2>1. Recorder app</h2>
+    <p>Stores signatures and deletes signing requests. Install it on <strong>cla</strong> and <strong>cla-signatures</strong> only.</p>
+    <p class="muted">Permissions: Contents, Issues, Actions and Administration (read and write). Administration is needed only to delete signing requests.</p>
+    <form method="post" action="https://github.com/organizations/branes-ai/settings/apps/new?state=recorder">
+      <input type="hidden" name="manifest" id="m-recorder">
+      <button type="submit">Create the recorder app</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>2. Recheck app</h2>
+    <p>Re-runs the CLA check after someone signs. Install it on <strong>all repositories</strong>. It can only re-run workflows; it cannot read or change code.</p>
+    <p class="muted">Permissions: Actions (read and write), Pull requests (read).</p>
+    <form method="post" action="https://github.com/organizations/branes-ai/settings/apps/new?state=recheck">
+      <input type="hidden" name="manifest" id="m-recheck">
+      <button type="submit">Create the recheck app</button>
+    </form>
+  </div>
+</main>
+<script>
+const base = location.origin + location.pathname;
+const common = { url: "https://github.com/branes-ai/cla", hook_attributes: { url: "https://github.com/branes-ai/cla", active: false },
+                 redirect_url: base, public: false, default_events: [] };
+document.getElementById("m-recorder").value = JSON.stringify({ ...common, name: "branes-ai-cla-recorder",
+  description: "Records Branes.AI CLA signatures from the signing page.",
+  default_permissions: { contents: "write", issues: "write", actions: "write", administration: "write", metadata: "read" } });
+document.getElementById("m-recheck").value = JSON.stringify({ ...common, name: "branes-ai-cla-recheck",
+  description: "Re-runs the Branes.AI CLA check after a signature.",
+  default_permissions: { actions: "write", pull_requests: "read", metadata: "read" } });
+const q = new URLSearchParams(location.search);
+if (q.get("code")) {
+  const which = q.get("state") === "recheck" ? "recheck" : "recorder";
+  const b = document.getElementById("back");
+  b.hidden = false;
+  b.innerHTML = `<h2>The ${which} app was created</h2><p>Go back to Claude for the next steps (install it, then generate its private key). You can ignore the code in this page's address.</p>`;
+  history.replaceState(null, "", base);
+}
+</script>
+</body>
+</html>
