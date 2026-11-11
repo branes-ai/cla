@@ -20,8 +20,13 @@ async function sweep(github, core) {
   let n = 0;
   for (const i of issues) {
     if (i.pull_request || !(i.body || "").includes(MARKER)) continue;
-    await moveToPrivate(github, i.node_id);
-    n++;
+    try {
+      if (i.locked) await github.rest.issues.unlock({ owner: "branes-ai", repo: "cla", issue_number: i.number });
+      await moveToPrivate(github, i.node_id);
+      n++;
+    } catch (e) {
+      core.warning(`Could not move one signing request: ${e.message}`);
+    }
   }
   core.info(`Moved ${n} leftover signing request(s) to private storage.`);
 }
