@@ -1,7 +1,8 @@
 # Keeps the public scrambled signer list in step with the private store, so that adding a
 # team member to allowlist.txt in branes-ai/cla-signatures takes effect within about 15
-# minutes, then re-runs failed CLA checks. Also removes finished signing-page runs from
-# this public repository's Actions history, so they do not show who signed.
+# minutes, then re-runs failed CLA checks. Also moves any leftover signing requests to the
+# private repository and removes finished signing-page runs from this public repository's
+# Actions history, so they do not show who signed.
 # Secrets: the "cla-signing" environment (see cla-form.yml).
 
 name: CLA sync
@@ -91,6 +92,14 @@ jobs:
           script: |
             const { rerunAllFailed } = require(`${process.env.GITHUB_WORKSPACE}/cla/.github/scripts/rerun.js`);
             await rerunAllFailed(github, 'branes-ai', core);
+
+      - name: Move leftover signing requests to private storage
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        with:
+          github-token: ${{ steps.rec-token.outputs.token }}
+          script: |
+            const { sweep } = require(`${process.env.GITHUB_WORKSPACE}/cla/.github/scripts/hide-request.js`);
+            await sweep(github, core);
 
       - name: Remove finished signing-page runs from the public history
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0

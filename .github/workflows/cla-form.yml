@@ -3,7 +3,8 @@
 # their browser and opens an issue here containing only the encrypted block. This workflow
 # decrypts it, stores the record in the private branes-ai/cla-signatures repository,
 # refreshes the public scrambled signer list, re-runs failed CLA checks across the org,
-# confirms to the signer, then deletes the issue so no encrypted copy stays public.
+# confirms to the signer, then moves the issue into the private cla-signatures repository
+# so no encrypted copy stays public (GitHub does not let apps delete issues).
 #
 # All secrets live in the "cla-signing" environment, usable only from the main branch:
 #   CLA_FORM_PRIVATE_KEY                  decrypts submissions
@@ -153,16 +154,16 @@ jobs:
             } else {
               body = `${who} your signature could not be recorded: ${MESSAGE}\n\nSigning page: https://branes-ai.github.io/cla/sign/`;
             }
-            body += '\n\nFor your privacy this request is deleted automatically in a moment; this message is also in your GitHub notifications email.';
+            body += '\n\nFor your privacy this request is moved to private storage in a moment; this message is also in your GitHub notifications email.';
             await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body });
 
-      - name: Delete the request
+      - name: Move the request to private storage
         if: always() && steps.rec-token.outcome == 'success'
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         with:
           github-token: ${{ steps.rec-token.outputs.token }}
           script: |
             await new Promise((r) => setTimeout(r, 20000)); // let the notification email go out
-            await github.graphql('mutation($id: ID!) { deleteIssue(input: { issueId: $id }) { clientMutationId } }',
-              { id: context.payload.issue.node_id });
-            core.info('Request deleted.');
+            const { moveToPrivate } = require(`${process.env.GITHUB_WORKSPACE}/cla/.github/scripts/hide-request.js`);
+            await moveToPrivate(github, context.payload.issue.node_id);
+            core.info('Request moved to private storage.');
