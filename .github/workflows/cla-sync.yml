@@ -7,8 +7,9 @@
 name: CLA sync
 
 on:
-  schedule:
-    - cron: "7,22,37,52 * * * *"
+  # Schedule switched on after setup (the cla-signing environment and both apps).
+  # schedule:
+  #   - cron: "7,22,37,52 * * * *"
   workflow_dispatch:
 
 permissions:
